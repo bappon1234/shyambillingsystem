@@ -38,6 +38,12 @@ export default function NewBillPage() {
     ] as BillItem[],
   })
 
+  const inputClass =
+    'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 appearance-none'
+
+  const smallInputClass =
+    'rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 appearance-none'
+
   const updateItem = (index: number, field: keyof BillItem, value: string | number) => {
     const items = [...form.items]
     items[index] = {
@@ -140,6 +146,7 @@ export default function NewBillPage() {
       }
 
       router.push(`/bills/${data._id}`)
+      router.refresh()
     } catch (error) {
       console.error(error)
       alert('Server error')
@@ -150,254 +157,265 @@ export default function NewBillPage() {
 
   return (
     <>
-  <AppHeader />
-  <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-    <div className="min-h-screen bg-[#f4f6f8] py-8 px-4">
-      <div className="mx-auto max-w-4xl rounded-2xl bg-white shadow-lg border border-slate-200">
-        <div className="border-b px-6 py-5">
-          <h1 className="text-3xl font-bold text-slate-900">New Bill</h1>
-        </div>
-
-        <div className="p-6 space-y-6">
-          <div className="grid gap-5 md:grid-cols-2">
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Invoice Number
-              </label>
-              <input
-                value="Auto Generate"
-                readOnly
-                className="w-full rounded-xl border bg-slate-100 px-4 py-3 text-slate-600"
-              />
+      <AppHeader />
+      <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+        <div className="min-h-screen bg-[#f4f6f8] py-6 sm:py-8 px-3 sm:px-4">
+          <div className="mx-auto max-w-4xl rounded-2xl border border-slate-200 bg-white shadow-lg">
+            <div className="border-b px-4 py-4 sm:px-6 sm:py-5">
+              <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">New Bill</h1>
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Date
-              </label>
-              <input
-                value={new Date().toLocaleDateString('en-GB')}
-                readOnly
-                className="w-full rounded-xl border bg-slate-100 px-4 py-3 text-slate-600"
-              />
-            </div>
+            <div className="space-y-6 p-4 sm:p-6">
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Invoice Number
+                  </label>
+                  <input
+                    value="Auto Generate"
+                    readOnly
+                    className="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-slate-600 outline-none"
+                  />
+                </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Payment Mode
-              </label>
-              <select
-                value={form.paymentMethod}
-                onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
-                className="w-full rounded-xl border px-4 py-3"
-              >
-                <option>Cash</option>
-                <option>UPI</option>
-                <option>Card</option>
-                <option>Bank Transfer</option>
-              </select>
-            </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Date
+                  </label>
+                  <input
+                    value={new Date().toLocaleDateString('en-GB')}
+                    readOnly
+                    className="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-slate-600 outline-none"
+                  />
+                </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Customer Name *
-              </label>
-              <input
-                type="text"
-                value={form.customerName}
-                onChange={(e) => setForm({ ...form, customerName: e.target.value })}
-                placeholder="Enter customer name"
-                className="w-full rounded-xl border px-4 py-3"
-              />
-            </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Payment Mode
+                  </label>
+                  <select
+                    value={form.paymentMethod}
+                    onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+                    className={inputClass}
+                  >
+                    <option>Cash</option>
+                    <option>UPI</option>
+                    <option>Card</option>
+                    <option>Bank Transfer</option>
+                  </select>
+                </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Phone Number *
-              </label>
-              <input
-                type="text"
-                value={form.customerPhone}
-                onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
-                placeholder="Enter phone number"
-                className="w-full rounded-xl border px-4 py-3"
-              />
-            </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Customer Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={form.customerName}
+                    onChange={(e) => setForm({ ...form, customerName: e.target.value })}
+                    placeholder="Enter customer name"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
 
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Address
-              </label>
-              <input
-                type="text"
-                value={form.customerAddress}
-                onChange={(e) => setForm({ ...form, customerAddress: e.target.value })}
-                placeholder="Enter address"
-                className="w-full rounded-xl border px-4 py-3"
-              />
-            </div>
-          </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    value={form.customerPhone}
+                    onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
+                    placeholder="Enter phone number"
+                    className={inputClass}
+                    autoComplete="off"
+                    inputMode="numeric"
+                  />
+                </div>
 
-          <div className="overflow-x-auto rounded-xl border">
-            <table className="min-w-[1100px] w-full text-sm">
-              <thead className="bg-slate-100 text-slate-700">
-                <tr>
-                  <th className="border-b px-3 py-3 text-left">SL</th>
-                  <th className="border-b px-3 py-3 text-left">Description</th>
-                  <th className="border-b px-3 py-3 text-left">1 Patta = Pc</th>
-                  <th className="border-b px-3 py-3 text-left">Unit</th>
-                  <th className="border-b px-3 py-3 text-left">Qty</th>
-                  <th className="border-b px-3 py-3 text-left">MRP</th>
-                  <th className="border-b px-3 py-3 text-left">Disc %</th>
-                  <th className="border-b px-3 py-3 text-left">Rate</th>
-                  <th className="border-b px-3 py-3 text-left">Total</th>
-                  <th className="border-b px-3 py-3 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {form.items.map((item, index) => {
-                  const packRate = item.mrp - (item.mrp * item.discount) / 100
-                  const rate = item.unitType === 'pc' ? packRate / (item.packQty || 1) : packRate
-                  const total = rate * item.qty
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Address
+                  </label>
+                  <input
+                    type="text"
+                    value={form.customerAddress}
+                    onChange={(e) => setForm({ ...form, customerAddress: e.target.value })}
+                    placeholder="Enter address"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
 
-                  return (
-                    <tr key={index}>
-                      <td className="border-b px-3 py-2">
-                        <input
-                          value={item.sl}
-                          readOnly
-                          className="w-14 rounded-md border bg-slate-50 px-2 py-2"
-                        />
-                      </td>
-                      <td className="border-b px-3 py-2">
-                        <input
-                          value={item.description}
-                          onChange={(e) => updateItem(index, 'description', e.target.value)}
-                          placeholder="Item name"
-                          className="w-full rounded-md border px-3 py-2"
-                        />
-                      </td>
-                      <td className="border-b px-3 py-2">
-                        <input
-                          type="number"
-                          value={item.packQty}
-                          onChange={(e) => updateItem(index, 'packQty', e.target.value)}
-                          className="w-28 rounded-md border px-3 py-2"
-                        />
-                      </td>
-                      <td className="border-b px-3 py-2">
-                        <select
-                          value={item.unitType}
-                          onChange={(e) => updateItem(index, 'unitType', e.target.value)}
-                          className="w-24 rounded-md border px-3 py-2"
-                        >
-                          <option value="patta">patta</option>
-                          <option value="pc">pc</option>
-                        </select>
-                      </td>
-                      <td className="border-b px-3 py-2">
-                        <input
-                          type="number"
-                          value={item.qty}
-                          onChange={(e) => updateItem(index, 'qty', e.target.value)}
-                          className="w-20 rounded-md border px-3 py-2"
-                        />
-                      </td>
-                      <td className="border-b px-3 py-2">
-                        <input
-                          type="number"
-                          value={item.mrp}
-                          onChange={(e) => updateItem(index, 'mrp', e.target.value)}
-                          className="w-28 rounded-md border px-3 py-2"
-                        />
-                      </td>
-                      <td className="border-b px-3 py-2">
-                        <input
-                          type="number"
-                          value={item.discount}
-                          onChange={(e) => updateItem(index, 'discount', e.target.value)}
-                          className="w-24 rounded-md border px-3 py-2"
-                        />
-                      </td>
-                      <td className="border-b px-3 py-2 font-medium">
-                        ₹{rate.toFixed(2)}
-                      </td>
-                      <td className="border-b px-3 py-2 font-semibold">
-                        ₹{total.toFixed(2)}
-                      </td>
-                      <td className="border-b px-3 py-2 text-center">
-                        <button
-                          onClick={() => removeRow(index)}
-                          disabled={form.items.length === 1}
-                          className="rounded-md bg-red-50 p-2 text-red-600 disabled:opacity-50"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="min-w-[1100px] w-full text-sm">
+                  <thead className="bg-slate-100 text-slate-700">
+                    <tr>
+                      <th className="border-b px-3 py-3 text-left">SL</th>
+                      <th className="border-b px-3 py-3 text-left">Description</th>
+                      <th className="border-b px-3 py-3 text-left">1 Patta = Pc</th>
+                      <th className="border-b px-3 py-3 text-left">Unit</th>
+                      <th className="border-b px-3 py-3 text-left">Qty</th>
+                      <th className="border-b px-3 py-3 text-left">MRP</th>
+                      <th className="border-b px-3 py-3 text-left">Disc %</th>
+                      <th className="border-b px-3 py-3 text-left">Rate</th>
+                      <th className="border-b px-3 py-3 text-left">Total</th>
+                      <th className="border-b px-3 py-3 text-center">Action</th>
                     </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
 
-          <button
-            onClick={addRow}
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-white font-semibold"
-          >
-            <Plus size={18} />
-            Add Item
-          </button>
+                  <tbody>
+                    {form.items.map((item, index) => {
+                      const packRate = item.mrp - (item.mrp * item.discount) / 100
+                      const rate = item.unitType === 'pc' ? packRate / (item.packQty || 1) : packRate
+                      const total = rate * item.qty
 
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Amount Received
-            </label>
-            <input
-              type="number"
-              value={form.amountReceived}
-              onChange={(e) => setForm({ ...form, amountReceived: Number(e.target.value) })}
-              className="w-full rounded-xl border px-4 py-3"
-            />
-          </div>
+                      return (
+                        <tr key={index}>
+                          <td className="border-b px-3 py-2">
+                            <input
+                              value={item.sl}
+                              readOnly
+                              className="w-14 rounded-md border border-slate-300 bg-slate-50 px-2 py-2 text-slate-700 outline-none"
+                            />
+                          </td>
+                          <td className="border-b px-3 py-2">
+                            <input
+                              value={item.description}
+                              onChange={(e) => updateItem(index, 'description', e.target.value)}
+                              placeholder="Item name"
+                              className={`w-full ${smallInputClass}`}
+                              autoComplete="off"
+                            />
+                          </td>
+                          <td className="border-b px-3 py-2">
+                            <input
+                              type="number"
+                              value={item.packQty}
+                              onChange={(e) => updateItem(index, 'packQty', e.target.value)}
+                              className={`w-28 ${smallInputClass}`}
+                              inputMode="numeric"
+                            />
+                          </td>
+                          <td className="border-b px-3 py-2">
+                            <select
+                              value={item.unitType}
+                              onChange={(e) => updateItem(index, 'unitType', e.target.value)}
+                              className={`w-24 ${smallInputClass}`}
+                            >
+                              <option value="patta">patta</option>
+                              <option value="pc">pc</option>
+                            </select>
+                          </td>
+                          <td className="border-b px-3 py-2">
+                            <input
+                              type="number"
+                              value={item.qty}
+                              onChange={(e) => updateItem(index, 'qty', e.target.value)}
+                              className={`w-20 ${smallInputClass}`}
+                              inputMode="numeric"
+                            />
+                          </td>
+                          <td className="border-b px-3 py-2">
+                            <input
+                              type="number"
+                              value={item.mrp}
+                              onChange={(e) => updateItem(index, 'mrp', e.target.value)}
+                              className={`w-28 ${smallInputClass}`}
+                              inputMode="decimal"
+                            />
+                          </td>
+                          <td className="border-b px-3 py-2">
+                            <input
+                              type="number"
+                              value={item.discount}
+                              onChange={(e) => updateItem(index, 'discount', e.target.value)}
+                              className={`w-24 ${smallInputClass}`}
+                              inputMode="decimal"
+                            />
+                          </td>
+                          <td className="border-b px-3 py-2 font-medium text-slate-800">
+                            ₹{rate.toFixed(2)}
+                          </td>
+                          <td className="border-b px-3 py-2 font-semibold text-slate-900">
+                            ₹{total.toFixed(2)}
+                          </td>
+                          <td className="border-b px-3 py-2 text-center">
+                            <button
+                              onClick={() => removeRow(index)}
+                              disabled={form.items.length === 1}
+                              className="rounded-md bg-red-50 p-2 text-red-600 disabled:opacity-50"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-          <div className="rounded-xl bg-slate-50 p-5 border">
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>Subtotal:</span>
-                <span>₹{summary.subtotal.toFixed(2)}</span>
+              <button
+                onClick={addRow}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white"
+              >
+                <Plus size={18} />
+                Add Item
+              </button>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Amount Received
+                </label>
+                <input
+                  type="number"
+                  value={form.amountReceived}
+                  onChange={(e) => setForm({ ...form, amountReceived: Number(e.target.value) })}
+                  className={inputClass}
+                  inputMode="decimal"
+                />
               </div>
-              <div className="flex justify-between text-red-600">
-                <span>Total Discount:</span>
-                <span>-₹{summary.totalDiscount.toFixed(2)}</span>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <div className="space-y-2 text-sm text-slate-700">
+                  <div className="flex justify-between">
+                    <span>Subtotal:</span>
+                    <span>₹{summary.subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-red-600">
+                    <span>Total Discount:</span>
+                    <span>-₹{summary.totalDiscount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Round Off:</span>
+                    <span>₹{summary.roundOff.toFixed(2)}</span>
+                  </div>
+                  <div className="mt-3 flex justify-between border-t pt-3 text-2xl font-bold sm:text-3xl">
+                    <span className="text-slate-900">Grand Total:</span>
+                    <span className="text-green-600">₹{summary.grandTotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Balance:</span>
+                    <span className="text-green-600">₹{summary.balance.toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>Round Off:</span>
-                <span>₹{summary.roundOff.toFixed(2)}</span>
-              </div>
-              <div className="mt-3 border-t pt-3 flex justify-between text-3xl font-bold">
-                <span>Grand Total:</span>
-                <span className="text-green-600">₹{summary.grandTotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Balance:</span>
-                <span className="text-green-600">₹{summary.balance.toFixed(2)}</span>
-              </div>
+
+              <button
+                onClick={generateBill}
+                disabled={loading}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-5 py-4 text-lg font-bold text-white disabled:opacity-50"
+              >
+                <FileText size={20} />
+                {loading ? 'Generating Bill...' : 'Generate Bill'}
+              </button>
             </div>
           </div>
-
-          <button
-            onClick={generateBill}
-            disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-green-500 px-5 py-4 text-lg font-bold text-white disabled:opacity-50"
-          >
-            <FileText size={20} />
-            {loading ? 'Generating Bill...' : 'Generate Bill'}
-          </button>
         </div>
       </div>
-    </div>
-    </div>
     </>
   )
 }

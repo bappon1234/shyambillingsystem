@@ -1,17 +1,30 @@
 import Link from 'next/link'
 import { Eye } from 'lucide-react'
 import AppHeader from '@/components/AppHeader'
+import { connectDB } from '@/lib/db'
+import Bill from '@/models/Bill'
 
 async function getPendingBills() {
-  const res = await fetch('http://localhost:3000/api/bills/pending', {
-    cache: 'no-store',
+  await connectDB()
+
+  const bills = await Bill.find({
+    balance: { $gt: 0 },
   })
+    .sort({ createdAt: -1 })
+    .lean()
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch pending bills')
+  const totalPending = bills.reduce(
+    (sum: number, bill: any) => sum + Number(bill.balance || 0),
+    0
+  )
+
+  return {
+    bills: bills.map((bill: any) => ({
+      ...bill,
+      _id: bill._id.toString(),
+    })),
+    totalPending,
   }
-
-  return res.json()
 }
 
 export default async function PendingBillsPage() {
@@ -56,7 +69,9 @@ export default async function PendingBillsPage() {
 
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
               <div className="border-b border-slate-200 px-5 py-4">
-                <h2 className="text-lg font-semibold text-slate-800">Pending Customers</h2>
+                <h2 className="text-lg font-semibold text-slate-800">
+                  Pending Customers
+                </h2>
                 <p className="text-sm text-slate-500">
                   View unpaid invoice details and dues
                 </p>
@@ -101,7 +116,9 @@ export default async function PendingBillsPage() {
                             </span>
                           </td>
                           <td className="px-5 py-4 text-slate-500">
-                            {new Date(bill.createdAt).toLocaleDateString('en-GB')}
+                            {bill.createdAt
+                              ? new Date(bill.createdAt).toLocaleDateString('en-GB')
+                              : '-'}
                           </td>
                           <td className="px-5 py-4 text-center">
                             <div className="flex items-center justify-center gap-2">

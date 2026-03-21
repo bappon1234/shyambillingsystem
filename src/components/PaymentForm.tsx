@@ -13,19 +13,24 @@ export default function PaymentForm({
   const router = useRouter()
   const [amount, setAmount] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
+    setError('')
+    setSuccess('')
+
     const payAmount = Number(amount)
 
     if (isNaN(payAmount) || payAmount <= 0) {
-      alert('Please enter valid amount')
+      setError('Please enter valid amount')
       return
     }
 
     if (payAmount > pendingBalance) {
-      alert('Amount cannot be greater than pending balance')
+      setError('Amount cannot be greater than pending balance')
       return
     }
 
@@ -42,17 +47,19 @@ export default function PaymentForm({
 
       const data = await res.json()
 
-      if (!data.success) {
-        alert(data.message || 'Payment failed')
+      if (!res.ok || !data.success) {
+        setError(data.message || 'Payment failed')
         return
       }
 
-      alert('Payment updated successfully')
+      setSuccess('Payment updated successfully')
+      setAmount('')
+
       router.push('/bills/pending')
       router.refresh()
     } catch (error) {
       console.error(error)
-      alert('Something went wrong')
+      setError('Something went wrong')
     } finally {
       setLoading(false)
     }
@@ -68,18 +75,38 @@ export default function PaymentForm({
           type="number"
           min="1"
           max={pendingBalance}
+          step="0.01"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Enter payment amount"
-          className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500"
+          className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-500"
         />
       </div>
+
+      <div className="rounded-2xl bg-slate-50 p-4">
+        <p className="text-sm text-slate-500">Pending Balance</p>
+        <p className="mt-1 text-lg font-bold text-red-500">
+          ₹{Number(pendingBalance || 0).toLocaleString('en-IN')}
+        </p>
+      </div>
+
+      {error ? (
+        <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          {error}
+        </div>
+      ) : null}
+
+      {success ? (
+        <div className="rounded-2xl bg-green-50 px-4 py-3 text-sm font-medium text-green-600">
+          {success}
+        </div>
+      ) : null}
 
       <div className="flex gap-3">
         <button
           type="button"
           onClick={() => setAmount(String(pendingBalance))}
-          className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+          className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           Full Payment
         </button>

@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { connectDB } from '@/lib/db'
 import Bill from '@/models/Bill'
 
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -37,6 +38,7 @@ export async function PATCH(
 
     const currentReceived = Number(bill.amountReceived || 0)
     const currentBalance = Number(bill.balance || 0)
+    const grandTotal = Number(bill.grandTotal || 0)
 
     if (currentBalance <= 0) {
       return NextResponse.json(
@@ -59,13 +61,15 @@ export async function PATCH(
     }
 
     bill.amountReceived = currentReceived + payAmount
-    bill.balance = currentBalance - payAmount
-
-    if (bill.balance < 0) {
-      bill.balance = 0
-    }
+    bill.balance = Math.max(0, grandTotal - Number(bill.amountReceived || 0))
 
     await bill.save()
+
+    revalidatePath('/dashboard')
+    revalidatePath('/bills/pending')
+    revalidatePath('/bills/today')
+    revalidatePath(`/bills/${bill._id}`)
+    revalidatePath(`/bills/pay/${bill._id}`)
 
     return NextResponse.json({
       success: true,

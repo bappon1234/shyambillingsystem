@@ -1,20 +1,23 @@
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import AppHeader from '@/components/AppHeader'
 import PaymentForm from '@/components/PaymentForm'
 import { notFound } from 'next/navigation'
-import { headers } from 'next/headers'
+import { connectDB } from '@/lib/db'
+import Bill from '@/models/Bill'
 
 async function getBill(id: string) {
-  const headerList = await headers()
-  const host = headerList.get('host')
-  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  await connectDB()
 
-  const res = await fetch(`${protocol}://${host}/api/bills/${id}`, {
-    cache: 'no-store',
-  })
+  const bill = await Bill.findById(id).lean()
 
-  if (!res.ok) return null
+  if (!bill) return null
 
-  return res.json()
+  return {
+    ...bill,
+    _id: bill._id.toString(),
+  }
 }
 
 export default async function PayBillPage({
@@ -23,13 +26,11 @@ export default async function PayBillPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const data = await getBill(id)
+  const bill = await getBill(id)
 
-  if (!data?.success || !data?.bill) {
+  if (!bill) {
     notFound()
   }
-
-  const bill = data.bill
 
   return (
     <>
@@ -65,7 +66,9 @@ export default async function PayBillPage({
               <div>
                 <p className="text-sm text-slate-500">Date</p>
                 <p className="mt-1 font-semibold text-slate-800">
-                  {new Date(bill.createdAt).toLocaleDateString('en-GB')}
+                  {bill.createdAt
+                    ? new Date(bill.createdAt).toLocaleDateString('en-GB')
+                    : '-'}
                 </p>
               </div>
 
